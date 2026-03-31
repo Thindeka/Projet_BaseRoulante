@@ -8,6 +8,8 @@ Séparation officelle des tâches :
 - Alexandre : CAO, conception mécanique
 - Thindeka : code
 
+lien intéséssant TOF : https://wiki.ros.org/Drivers/Tutorials/DistanceMeasurementWithToFSensorVL53L1XPython 
+
 Jihen 
 
 - Alimentation → Test a faire
