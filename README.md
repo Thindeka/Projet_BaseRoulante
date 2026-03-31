@@ -1,4 +1,6 @@
-31/03/26 - Thindeka
+31/03/26 
+
+Thindeka
 
 Séparation officelle des tâches :
 
@@ -6,9 +8,9 @@ Séparation officelle des tâches :
 - Alexandre : CAO, conception mécanique
 - Thindeka : code
 
-Partie elec 
+Jihen 
 
-Alimentation → Test a faire
-Commande (cerveau) → Arduino + Bluetooth
-Action (moteurs) → driver + moteurs
-Capteurs → ultrason / IR / sécurité
+- Alimentation → Test a faire
+- Commande (cerveau) → Arduino + Bluetooth
+- Action (moteurs) → driver + moteurs
+- Capteurs → ultrason / IR / sécurité
