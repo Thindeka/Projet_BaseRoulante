@@ -31,16 +31,16 @@ Cas 2 : Base de travers
         
 
 
-Pipeline :
+Pipeline de la boucle de controle :
 
-
-Lire les 2 ToF (distance en mm)
--> vérifier que les mesures sont valides (ex : pas de valeur nulle)
--> filtrer les mesures
--> calculer l’erreur (d_avant - d_arriere)
--> décider si la base est parallèle ou non
--> calculer une correction
--> envoyer la commande moteur
+1. lire d_avant_brut
+2. lire d_arriere_brut
+3. vérifier si les deux mesures sont valides
+4. initialiser le filtre si c'est le premier passage
+5. sinon filtrer
+6. calculer l'erreur
+7. calculer la commande
+8. envoyer la commande
 
 
 [ToF avant + ToF arrière]
@@ -78,6 +78,12 @@ Principe du filtrage
 -> alpha = 0.3 : bon compromis stable et réactif
 
 
+Principe de la saturation 
+-> éviter d'envoyer une commande trop grande
+
+
+Principe de la correction (commande de roation)
+-> plus l'erreur est grande (= plus on est de travers), plus on corrige (= plus on tourne)
 
 
 
