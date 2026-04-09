@@ -33,6 +33,7 @@ Cas 2 : Base de travers
 
 Pipeline :
 
+
 Lire les 2 ToF (distance en mm)
 -> vérifier que les mesures sont valides (ex : pas de valeur nulle)
 -> filtrer les mesures
@@ -42,13 +43,24 @@ Lire les 2 ToF (distance en mm)
 -> envoyer la commande moteur
 
 
-Blocs de code :
-1. Lecture des capteurs
-2. Validation
-3. Filtrage
-4. Calcul d'erreur
-5. Controleur
-6. Commande moteur
+[ToF avant + ToF arrière]
+        ↓
+[Validation mesures]
+        ↓
+[Filtrage]
+        ↓
+[Calcul erreur = d_avant - d_arriere]
+        ↓
+[Comparaison à un seuil]
+        ↓
+[Correcteur proportionnel]
+        ↓
+[Saturation]
+        ↓
+[Commande moteurs]
+        ↓
+[Rotation de la base] 
+
 
 
 Cas de sécurité 
@@ -56,6 +68,16 @@ Cas de sécurité
 2. Une mesure saute brutalement => ignorer si variation trop violente
 3. Le lit disparait => arreter la correction
 4. Oscillation autour de zéro => utilsier une zone morte
+
+
+
+Principe du filtrage 
+-> le ToF ne capte pas des valeurs completement stable (tremblements)
+-> au lieu de prendre la nouvelle valeur telle quelle, on fait un melange entre la valeur ancienne et la valeur nouvelle
+-> valeur_filtrée = un peu de la nouvelle + beaucoup de l’ancienne
+-> alpha = 0.3 : bon compromis stable et réactif
+
+
 
 
 

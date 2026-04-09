@@ -26,8 +26,35 @@ init_filtre = False
 
 
 
-def mesure_valide (d) :
+def mesure_valide (d : float) -> bool :
+    """ Retourne vrai si la distance d est valide
+
+    Args:
+        d (float): distance
+
+    Returns:
+        bool 
+    """
     return MIN_DIST <= d <= MAX_DIST 
+
+
+
+
+def filtrer (nouvelle_val : float, ancienne_val : float) -> float :
+    """_summary_
+
+    Args:
+        nouvelle_val (float): _description_
+        ancienne_val (float): _description_
+
+    Returns:
+        float: valeur filtrée
+    """
+    return ALPHA * nouvelle_val + (1 - ALPHA) * ancienne_val
+
+
+
+
 
 
 
