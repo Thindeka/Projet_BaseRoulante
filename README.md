@@ -8,15 +8,16 @@ Travail Ultrason
 Lit
 │
 │
-│                           us          us
+│                           US          US
 |                      ┌──────────────────────┐
-|                      │ ToF avant      ↑     │  us
+|                      │ ToF avant      ↑     │  US
 |                      │                 sens │
-|                   us │                 base │  
-|                      │ ToF arrière          │ us
+|                   US │                 base │  
+|                      │ ToF arrière          │  US
 |                      └──────────────────────┘
-|                           us         us        
+|                           US          US        
 |
+
 
 
 On a capteurs ultrason
