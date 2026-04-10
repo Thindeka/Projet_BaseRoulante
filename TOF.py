@@ -134,7 +134,7 @@ def boucle_controle (d_avant_brut : float, d_arriere_brut : float) -> float :
     # 2. Initialisation du filtre
     if not init_filtre :
         d_avant_filtre = d_avant_brut
-        d_arriere_filtre = d_avant_brut
+        d_arriere_filtre = d_arriere_brut
         init_filtre = True 
     else :
         d_avant_filtre = filtrer(d_avant_brut, d_avant_filtre)
@@ -149,6 +149,11 @@ def boucle_controle (d_avant_brut : float, d_arriere_brut : float) -> float :
 
     return commande_rotation
 
+
+# petit test
+for i in range (10) :
+    cmd = boucle_controle(340,300)
+    print(f"tour {i} : cmd = {cmd}")
     
 
 
