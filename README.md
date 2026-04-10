@@ -6,18 +6,20 @@ Thindeka
 Travail Ultrason
 
 
+```
 Lit
 │
 │
-│                           US          US
-|                      ┌──────────────────────┐
-|                      │ ToF avant      ↑     │  US
-|                      │                 sens │
-|                   US │                 base │  
-|                      │ ToF arrière          │  US
-|                      └──────────────────────┘
-|                           US          US        
-|
+│                US            US
+│          ┌────────────────────────┐
+│          │   ToF avant      ↑     │   US
+│          │                  sens  │
+│      US  │                  base  │
+│          │   ToF arrière          │   US
+│          └────────────────────────┘
+│                US            US
+│
+```
 
 
 
