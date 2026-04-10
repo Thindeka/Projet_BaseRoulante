@@ -1,13 +1,11 @@
-# VARIABLES GLOBALES
-
 # distances en mm
 
-# CAPTEURS 
-MIN_DIST = 50  
-MAX_DIST = 800
+# DISTANCES 
+ToF_MIN_DIST = 50  
+ToF_MAX_DIST = 800
 
 # FILTARGE
-ALPHA = 0.3 
+ToF_ALPHA = 0.3 
 
 # ALIGNEMENT
 SEUIL_PARALLELISME = 10
@@ -26,16 +24,16 @@ init_filtre = False
 
 
 
-def mesure_valide (d : float) -> bool :
-    """ Retourne vrai si la distance d est valide
+def mesure_valide (distance : float) -> bool :
+    """ Retourne vrai si la distance est valide
 
     Args:
-        d (float): distance en mm
+        disatnce (float): distance en mm
 
     Returns:
         bool 
     """
-    return MIN_DIST <= d <= MAX_DIST 
+    return ToF_MIN_DIST <= distance <= ToF_MAX_DIST 
 
 
 
@@ -50,7 +48,7 @@ def filtrer (nouvelle_val : float, ancienne_val : float) -> float :
     Returns:
         float: valeur filtrée
     """
-    return ALPHA * nouvelle_val + (1 - ALPHA) * ancienne_val
+    return ToF_ALPHA * nouvelle_val + (1 - ToF_ALPHA) * ancienne_val
 
 
 

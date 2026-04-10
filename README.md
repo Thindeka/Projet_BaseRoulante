@@ -1,3 +1,81 @@
+10/04/26
+
+Thindeka
+
+
+Travail Ultrason
+
+Lit
+│
+│
+│                           us          us
+|                      ┌──────────────────────┐
+|                      │ ToF avant      ↑     │  us
+|                      │                 sens │
+|                   us │                 base │  
+|                      │ ToF arrière          │ us
+|                      └──────────────────────┘
+|                           us         us        
+|
+
+
+On a capteurs ultrason
+
+Avant
+    us_avant_gauche
+    us_avant_droite
+Arrière
+    us_arriere_gauche
+    us_arriere_droite
+Gauche
+    us_gauche_avant
+    us_gauche_arriere
+Droite
+    us_droite_avant
+    us_droite_arriere
+
+Pour chaque côté le but est de résumer les 2 distances mesurées en une seule décision
+=> on prend en compte la plus petite distance pour la sécurité
+
+
+Pipeline :
+
+Lire les 8 ultrasons
+[vérifier les mesures]
+         ↓            
+[filtrer chaque capteur]
+         ↓            
+[regrouper les capteurs par côté]
+         ↓            
+[prendre la distance la plus petite par côté]
+         ↓            
+[classer chaque côté : libre / proche / danger]
+         ↓            
+[autoriser ou bloquer les mouvements]
+
+
+
+À faire : rergouper code commun ToF, Ultrason
+
+
+
+
+
+Ce qu'il reste à gérer pour le code ToF :
+    - gestion des mesures invalides
+    - validation temporelle ("je suis parallèle ssi l'erreur en en dessous d'un seuil pendant un certain moment)
+    - machine d'états : recherche lit, alignement, aligné, défaut capteur
+    - gestion du sens de rotation : va dépendre du cablage
+    - bruit (ex : pb un des ToF, mesures aberrantes...)
+
+
+
+
+
+
+
+
+
 09/04/26
 
 Thindeka
