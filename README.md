@@ -1,3 +1,28 @@
+14/04/24
+
+Thindeka - Avancemnt boucle de controle avec les ultrason
+
+Idée fonctionnement
+
+Cas 1 : AVANCER
+  -> avant est libre => on avance
+  -> avant est proche => on ralentit ou on stoppe selon ton choix
+  -> si l’avant est dangereux → on stoppe
+x
+Cas 2 : le robot doit reculer
+
+On regarde l’arrière.
+
+Cas 3 : le robot est à l’arrêt
+
+Pas besoin d’autoriser un mouvement.
+
+
+
+
+
+
+
 10/04/26
 
 Thindeka

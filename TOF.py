@@ -148,7 +148,7 @@ def boucle_controle (d_avant_brut : float, d_arriere_brut : float) -> float :
     return commande_rotation
 
 
-# petit test
+# petit test : OK 
 for i in range (10) :
     cmd = boucle_controle(340,300)
     print(f"tour {i} : cmd = {cmd}")

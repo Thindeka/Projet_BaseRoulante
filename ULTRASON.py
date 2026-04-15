@@ -1,30 +1,26 @@
 # distances en mm
 
-# DISTANCES 
-US_MIN_DIST = 20
+# SEUILS
+SEUIL_SECURITE_LONGUEUR = 80  
+SEUIL_SECURITE_LARGEUR = 60
+
+# DISTANCES
+US_MIN_DIST = 60
 US_MAX_DIST = 2000
 
-# FILTARGE
+# FILTRAGE
 US_ALPHA = 0.3
 
-# SEUILS
+# SEUIL
 SEUIL_DANGER = 200
-SEUIL_PROCHE = 500
 
+# VARIABLES GLOBALES
+d_avant_filtre = 0.0
+d_arriere_filtre = 0.0
+d_gauche_filtre = 0.0
+d_droite_filtre = 0.0
 
-
-
-def distance_synthetique (distance1 : float, distance2 : float) -> float :
-    """ Retourne la distance synthetique d'un côté
-
-    Args:
-        distance1 (float)
-        distance2 (float)
-
-    Returns:
-        float: la distance la plus petite
-    """
-    return min(distance1, distance2)
+init_filtre_us = False
 
 
 
@@ -57,17 +53,123 @@ def filtrer (nouvelle_val : float, ancienne_val : float) -> float :
 
 
 
-def etat_distance (distance: float) -> str : 
-    """ Retourne l'état de distance
+def obstacle_sur_longueur (distance : float) -> bool :
+    return distance < SEUIL_SECURITE_LONGUEUR
+
+
+
+
+def obstacle_sur_largeur (distance : float) -> bool :
+    return distance < SEUIL_SECURITE_LARGEUR
+
+
+
+def boucle_controle_ultrasons(d_avant_brut: float, d_arriere_brut: float, d_gauche_brut: float, d_droite_brut: float) -> dict:
+    """ Traite les 4 mesures ultrason et retourne une décision de stop.
 
     Args:
-        distance (float): en mm
+        d_avant_brut (float): mm
+        d_arriere_brut (float): mm
+        d_gauche_brut (float): mm
+        d_droite_brut (float): mm
 
     Returns:
-        str
+        dict: de la forme 
+        { "stop": bool,
+          "obstacle": bool,
+          "raison": string
+        }
     """
-    if distance < SEUIL_DANGER:
-        return "DANGER"
-    if distance < SEUIL_PROCHE:
-        return "PROCHE"
-    return "LIBRE"
+
+    global d_avant_filtre, d_arriere_filtre, d_gauche_filtre, d_droite_filtre
+    global init_filtre_us
+
+    # 1. Vérification des mesures
+    if (not mesure_valide(d_avant_brut) or not mesure_valide(d_arriere_brut) or not mesure_valide(d_gauche_brut) or not mesure_valide(d_droite_brut)) :
+        return {
+            "stop": True,
+            "obstacle": True,
+            "raison": "Mesure ultrason invalide"
+        }
+
+    # 2. Initialisation ou mise à jour du filtre
+    if not init_filtre_us :
+        d_avant_filtre = d_avant_brut
+        d_arriere_filtre = d_arriere_brut
+        d_gauche_filtre = d_gauche_brut
+        d_droite_filtre = d_droite_brut
+        init_filtre_us = True
+    else:
+        d_avant_filtre = filtrer(d_avant_brut, d_avant_filtre)
+        d_arriere_filtre = filtrer(d_arriere_brut, d_arriere_filtre)
+        d_gauche_filtre = filtrer(d_gauche_brut, d_gauche_filtre)
+        d_droite_filtre = filtrer(d_droite_brut, d_droite_filtre)
+
+    # 3. Détection obstacle sur la longueur
+    if obstacle_sur_longueur(d_avant_filtre):
+        return {
+            "stop": True,
+            "obstacle": True,
+            "raison": "Obstacle proche à l'avant",
+            "distances_filtrees": {
+                "avant": d_avant_filtre,
+                "arriere": d_arriere_filtre,
+                "gauche": d_gauche_filtre,
+                "droite": d_droite_filtre
+            }
+        }
+
+    if obstacle_sur_longueur(d_arriere_filtre):
+        return {
+            "stop": True,
+            "obstacle": True,
+            "raison": "Obstacle proche à l'arriere",
+            "distances_filtrees": {
+                "avant": d_avant_filtre,
+                "arriere": d_arriere_filtre,
+                "gauche": d_gauche_filtre,
+                "droite": d_droite_filtre
+            }
+        }
+
+    # 4. Détection obstacle sur la largeur
+    if obstacle_sur_largeur(d_gauche_filtre):
+        return {
+            "stop": True,
+            "obstacle": True,
+            "raison": "Obstacle proche à gauche",
+            "distances_filtrees": {
+                "avant": d_avant_filtre,
+                "arriere": d_arriere_filtre,
+                "gauche": d_gauche_filtre,
+                "droite": d_droite_filtre
+            }
+        }
+
+    if obstacle_sur_largeur(d_droite_filtre):
+        return {
+            "stop": True,
+            "obstacle": True,
+            "raison": "Obstacle proche à droite",
+            "distances_filtrees": {
+                "avant": d_avant_filtre,
+                "arriere": d_arriere_filtre,
+                "gauche": d_gauche_filtre,
+                "droite": d_droite_filtre
+            }
+        }
+
+    # 5. Aucun obstacle détecté
+    return {
+        "stop": False,
+        "obstacle": False,
+        "raison": "Aucun obstacle proche",
+        "distances_filtrees": {
+            "avant": d_avant_filtre,
+            "arriere": d_arriere_filtre,
+            "gauche": d_gauche_filtre,
+            "droite": d_droite_filtre
+        }
+    }
+
+    
