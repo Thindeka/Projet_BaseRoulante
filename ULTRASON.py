@@ -5,7 +5,7 @@ SEUIL_SECURITE_LONGUEUR = 80
 SEUIL_SECURITE_LARGEUR = 60
 
 # DISTANCES
-US_MIN_DIST = 60
+US_MIN_DIST = 20
 US_MAX_DIST = 2000
 
 # FILTRAGE
@@ -173,3 +173,64 @@ def boucle_controle_ultrasons(d_avant_brut: float, d_arriere_brut: float, d_gauc
     }
 
     
+
+def reset_filtre_us():
+    global d_avant_filtre, d_arriere_filtre, d_gauche_filtre, d_droite_filtre
+    global init_filtre_us
+
+    d_avant_filtre = 0.0
+    d_arriere_filtre = 0.0
+    d_gauche_filtre = 0.0
+    d_droite_filtre = 0.0
+    init_filtre_us = False
+
+
+def test_scenario(nom: str, mesures: list[tuple[float, float, float, float]]):
+    print(f"\n--- {nom} ---")
+    reset_filtre_us()
+
+    for i, (avant, arriere, gauche, droite) in enumerate(mesures):
+        resultat = boucle_controle_ultrasons(avant, arriere, gauche, droite)
+        print(
+            f"tour={i:02d} | "
+            f"avant={avant:.1f} | arriere={arriere:.1f} | "
+            f"gauche={gauche:.1f} | droite={droite:.1f} | "
+            f"resultat={resultat}"
+        )
+
+
+import serial
+import time
+
+PORT = "/dev/cu.usbmodem11401"
+BAUDRATE = 9600
+
+ser = serial.Serial(PORT, BAUDRATE, timeout=1)
+time.sleep(2)
+
+reset_filtre_us()
+
+while True:
+    ligne = ser.readline().decode("utf-8").strip()
+
+    if not ligne:
+        continue
+
+    try:
+        distance_avant = float(ligne)
+
+        resultat = boucle_controle_ultrasons(
+            d_avant_brut=distance_avant,
+            d_arriere_brut=1000.0,
+            d_gauche_brut=1000.0,
+            d_droite_brut=1000.0
+        )
+
+        print(
+            f"avant={distance_avant:.1f} mm | "
+            f"filtrees={resultat.get('distances_filtrees', {})} | "
+            f"stop={resultat['stop']} | raison={resultat['raison']}"
+        )
+
+    except ValueError:
+        print(f"Ligne invalide : {ligne}")
