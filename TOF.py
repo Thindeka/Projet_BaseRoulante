@@ -148,16 +148,67 @@ def boucle_controle (d_avant_brut : float, d_arriere_brut : float) -> float :
     return commande_rotation
 
 
-# petit test : OK 
-for i in range (10) :
-    cmd = boucle_controle(340,300)
-    print(f"tour {i} : cmd = {cmd}")
     
 
+def reset_filtre():
+    global d_avant_filtre, d_arriere_filtre, init_filtre
+    d_avant_filtre = 0.0
+    d_arriere_filtre = 0.0
+    init_filtre = False
+
+
+
+def test_scenario(nom: str, mesures: list[tuple[float, float]]):
+    print(f"\n--- {nom} ---")
+    reset_filtre()
+
+    for i, (avant, arriere) in enumerate(mesures):
+        cmd = boucle_controle(avant, arriere)
+        err = calcul_erreur(d_avant_filtre, d_arriere_filtre) if init_filtre else 0.0
+        print(
+            f"tour={i:02d} | "
+            f"avant={avant:.1f} | arriere={arriere:.1f} | "
+            f"avant_f={d_avant_filtre:.1f} | arriere_f={d_arriere_filtre:.1f} | "
+            f"err={err:.1f} | cmd={cmd:.3f}"
+        )
 
 
 
 
+######## TESTS ########
+
+
+
+test_scenario(
+    "Base parallèle",
+    [(300, 300)] * 5
+)
+
+test_scenario(
+    "Avant plus loin",
+    [(340, 300)] * 5
+)
+
+
+test_scenario(
+    "Arriere plus loin",
+    [(300, 340)] * 5
+)
+
+test_scenario(
+    "Mesure invalide",
+    [(20, 300), (300, 20), (900, 300)]
+)
+
+test_scenario(
+    "Cas limite seuil",
+    [
+        (310, 300),  # erreur = 10
+        (309, 300),  # erreur = 9
+        (300, 310),  # erreur = -10
+        (300, 309),  # erreur = -9
+    ]
+)
 
 
 
