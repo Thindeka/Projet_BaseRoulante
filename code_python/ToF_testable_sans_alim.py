@@ -1,3 +1,26 @@
+"""
+    Arduino:
+        lit les 2 ToF gauche avant / gauche arrière
+        envoie les distances à Python
+
+    Python :
+        calcule l'erreur d'orientation
+        décide ROTATION / STOP ORIENTATION
+
+    
+"""
+
+
+
+import serial
+import time
+
+PORT = "..."       
+BAUDRATE = 9600
+
+ser = serial.Serial(PORT, BAUDRATE, timeout=1)
+
+
 # distances en mm
 
 # DISTANCES 
@@ -67,7 +90,7 @@ def calcul_erreur (d_avant_filtre : float, d_arriere_filtre : float) -> float :
 
 
 
-def saturer (val : float, min : float, max : float) -> float :
+def saturer (val : float, min_val : float, max_val : float) -> float :
     """ Bloque une valeur entre le min et le max en mm
 
     Args:
@@ -78,10 +101,10 @@ def saturer (val : float, min : float, max : float) -> float :
         float: la valeur bloquée
     """
 
-    if val < min :
-        return min
-    if val > max :
-        return max
+    if val < min_val :
+        return min_val
+    if val > max_val :
+        return max_val
     return val
 
 
@@ -102,7 +125,7 @@ def calcul_commande_rotation (erreur : float) -> float :
         return 0.0
     
     # commande est une vitesse moteur
-    commande = KP_ROT * erreur
+    commande = KP_ROT * erreur  # il y a peut être un signe -, jsp trop, faut tester
     commande = saturer(commande, -ROT_MAX, ROT_MAX)   
     
     return commande
@@ -126,6 +149,7 @@ def boucle_controle (d_avant_brut : float, d_arriere_brut : float) -> float :
 
     # 1. Verification des mesures 
     if not mesure_valide(d_avant_brut) or not mesure_valide(d_arriere_brut) :
+        print("Mesure ToF invalide")
         return 0.0
     
 
@@ -175,43 +199,51 @@ def test_scenario(nom: str, mesures: list[tuple[float, float]]):
 
 
 
-######## TESTS ########
 
 
+# laisse le temps à l'Arduino de redémarrer
+time.sleep(2)
 
-test_scenario(
-    "Base parallèle",
-    [(300, 300)] * 5
-)
+print("Début communication ToF Arduino <-> Python")
 
-test_scenario(
-    "Avant plus loin",
-    [(340, 300)] * 5
-)
+while True:
 
+    # lecture ligne série
+    ligne = ser.readline().decode("utf-8").strip()
 
-test_scenario(
-    "Arriere plus loin",
-    [(300, 340)] * 5
-)
+    if not ligne:
+        continue
 
-test_scenario(
-    "Mesure invalide",
-    [(20, 300), (300, 20), (900, 300)]
-)
+    try:
+        # exemple reçu : "320;300"
+        d_avant_str, d_arriere_str = ligne.split(";")
 
-test_scenario(
-    "Cas limite seuil",
-    [
-        (310, 300),  # erreur = 10
-        (309, 300),  # erreur = 9
-        (300, 310),  # erreur = -10
-        (300, 309),  # erreur = -9
-    ]
-)
+        d_avant = float(d_avant_str)
+        d_arriere = float(d_arriere_str)
 
+    except ValueError:
+        print(f"Ligne invalide : {ligne}")
+        continue
 
+    # appel de ton pipeline ToF
+    commande_rotation = boucle_controle(
+        d_avant_brut=d_avant,
+        d_arriere_brut=d_arriere
+    )
 
+    # affichage debug
+    erreur = calcul_erreur(d_avant_filtre, d_arriere_filtre)
+
+    print(
+        f"avant={d_avant:.1f} mm | "
+        f"arriere={d_arriere:.1f} mm | "
+        f"err={erreur:.1f} | "
+        f"cmd_rot={commande_rotation:.3f}"
+    )
+
+    # envoi commande vers Arduino
+    ser.write(f"{commande_rotation}\n".encode("utf-8"))
+    print(f"commande envoyee Arduino = {commande_rotation:.3f}")
 
 
 
